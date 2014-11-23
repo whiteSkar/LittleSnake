@@ -20,72 +20,97 @@ Scene* LittleSnake::createScene()
 // on "init" you need to initialize your instance
 bool LittleSnake::init()
 {
-    //////////////////////////////
-    // 1. super init first
-    if ( !Layer::init() )
+    if (!Layer::init())
     {
         return false;
     }
     
-    Size visibleSize = Director::getInstance()->getVisibleSize();
-    Point origin = Director::getInstance()->getVisibleOrigin();
+    directorSize = Director::getInstance()->getVisibleSize();
+    directorOrigin = Director::getInstance()->getVisibleOrigin();
 
-    /////////////////////////////
-    // 2. add a menu item with "X" image, which is clicked to quit the program
-    //    you may modify it.
+	this->clearMap();
 
-    // add a "close" icon to exit the progress. it's an autorelease object
-    auto closeItem = MenuItemImage::create(
-                                           "CloseNormal.png",
-                                           "CloseSelected.png",
-                                           CC_CALLBACK_1(LittleSnake::menuCloseCallback, this));
+	snake = Sprite::create("SnakeBody.png");
+	snake->setPosition(directorOrigin);
+	this->addChild(snake);
     
-	closeItem->setPosition(Point(origin.x + visibleSize.width - closeItem->getContentSize().width/2 ,
-                                origin.y + closeItem->getContentSize().height/2));
+	auto touchListener = EventListenerTouchOneByOne::create();
+	touchListener->setSwallowTouches(true);
 
-    // create menu, it's an autorelease object
-    auto menu = Menu::create(closeItem, NULL);
-    menu->setPosition(Point::ZERO);
-    this->addChild(menu, 1);
+	touchListener->onTouchBegan = CC_CALLBACK_2(LittleSnake::onTouchBegan, this);
+	touchListener->onTouchMoved = CC_CALLBACK_2(LittleSnake::onTouchMoved, this);
+	touchListener->onTouchEnded = CC_CALLBACK_2(LittleSnake::onTouchEnded, this);
+	touchListener->onTouchCancelled = CC_CALLBACK_2(LittleSnake::onTouchCancelled, this);
+	
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, this);
+	
+	isTouchDown = false;
+	initialTouchPos = Point::ZERO;
+	this->currentTouchPos = Point::ZERO;
 
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-    
-    auto label = LabelTTF::create("Little Snake", "Arial", 24);
-    
-    // position the label on the center of the screen
-    label->setPosition(Point(origin.x + visibleSize.width/2,
-                            origin.y + visibleSize.height - label->getContentSize().height));
-
-    // add the label as a child to this layer
-    this->addChild(label, 1);
-
-    // add "HelloWorld" splash screen"
-    auto sprite = Sprite::create("HelloWorld.png");
-
-    // position the sprite on the center of the screen
-    sprite->setPosition(Point(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-    // add the sprite as a child to this layer
-    this->addChild(sprite, 0);
+	this->scheduleUpdate();
     
     return true;
 }
 
-
-void LittleSnake::menuCloseCallback(Ref* pSender)
+void LittleSnake::update(float dt)
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
-	MessageBox("You pressed the close button. Windows Store Apps do not implement a close button.","Alert");
-    return;
-#endif
+	if (isTouchDown)
+	{
+		float swipeHorizontalThresholdDistance = directorSize.width * SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE;
+		float swipeVerticalThresholdDistance = directorSize.height * SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE;
 
-    Director::getInstance()->end();
+		if (currentTouchPos.x - initialTouchPos.x > swipeHorizontalThresholdDistance)
+		{
+			log("Swipe Right");
+			isTouchDown = false;
+		}
+		else if (currentTouchPos.x - initialTouchPos.x < -swipeHorizontalThresholdDistance)
+		{
+			log("Swipe Left");
+			isTouchDown = false;
+		}
+		else if (currentTouchPos.y - initialTouchPos.y > swipeVerticalThresholdDistance)
+		{
+			log("Swipe Up");
+			isTouchDown = false;
+		}
+		else if (currentTouchPos.y - initialTouchPos.y < -swipeVerticalThresholdDistance)
+		{
+			log("Swipe Down");
+			isTouchDown = false;
+		}
+	}
+}
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-    exit(0);
-#endif
+bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
+{
+	initialTouchPos = touch->getLocation();
+	currentTouchPos = touch->getLocation();
+	
+	isTouchDown = true;
+
+	return true;
+}
+
+void LittleSnake::onTouchMoved(Touch* touch, Event* event)
+{
+	currentTouchPos = touch->getLocation();
+}
+
+void LittleSnake::onTouchEnded(Touch* touch, Event* event)
+{
+	isTouchDown = false;
+}
+
+void LittleSnake::onTouchCancelled(Touch* touch, Event* event)
+{
+	onTouchEnded(touch, event);
+}
+
+void LittleSnake::clearMap()
+{
+	for (int i = 0; i < MAX_MAP_X; ++i)
+		for (int j = 0; j < MAX_MAP_Y; ++j)
+			map[i][j] = new std::vector<Sprite>();
 }
