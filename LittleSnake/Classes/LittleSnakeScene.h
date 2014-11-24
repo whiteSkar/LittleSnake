@@ -3,10 +3,18 @@
 
 #include "cocos2d.h"
 
+const int BLOCK_PIXEL_SIZE = 40;	// width and height of the snake body & the each grid block
 const int MAX_MAP_X = 48/2;	// HD screen ratio with 40 * 40 blocks
 const int MAX_MAP_Y = 27/2;	// TODO: remove / 2
 
 const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.10;
+const float SNAKE_MOVE_INTERVAL = 1;
+
+typedef struct {
+	cocos2d::Sprite *sprite;
+	int row;
+	int col;
+} SpriteBody;
 
 class LittleSnake : public cocos2d::Layer
 {
@@ -32,14 +40,20 @@ public:
 	cocos2d::Point currentTouchPos;
 
 private:
-	std::vector<cocos2d::Sprite> *map[MAX_MAP_X][MAX_MAP_Y];
+	std::vector<SpriteBody*> snakeBodies;
 
 	cocos2d::Size directorSize;
 	cocos2d::Point directorOrigin;
 
 	cocos2d::Sprite *snake;
+	cocos2d::Sprite *raspberry;
 
-	void clearMap();
+	void processTouch(float dt);
+	void updateSnake(float dt);
+
+	void renderSnake(float dt);
+
+	cocos2d::Point getSpritePosWithBlockPos(int blockPosX, int blockPosY);
 };
 
 #endif // __LITTLESNAKE_SCENE_H__

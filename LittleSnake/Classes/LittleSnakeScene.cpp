@@ -24,15 +24,33 @@ bool LittleSnake::init()
     {
         return false;
     }
+
+	srand(time(NULL));
     
     directorSize = Director::getInstance()->getVisibleSize();
     directorOrigin = Director::getInstance()->getVisibleOrigin();
 
-	this->clearMap();
+	snakeBodies = std::vector<SpriteBody*>();
 
 	snake = Sprite::create("SnakeBody.png");
-	snake->setPosition(directorOrigin);
 	this->addChild(snake);
+
+	SpriteBody *snakeHeadBody = new SpriteBody();
+	snakeHeadBody->sprite = snake;
+	snakeBodies.push_back(snakeHeadBody);
+
+	snakeHeadBody->row = MAX_MAP_Y / 2;
+	snakeHeadBody->col = MAX_MAP_X / 2;
+	snakeHeadBody->sprite->setPosition(getSpritePosWithBlockPos(snakeHeadBody->row, snakeHeadBody->col));
+
+	raspberry = Sprite::create("Raspberry.png");
+	//check collision with snake body when spawning
+	SpriteBody *raspberryBody = new SpriteBody();
+	raspberryBody->sprite = raspberry;
+	raspberryBody->row = rand() % MAX_MAP_Y;
+	raspberryBody->col = rand() % MAX_MAP_X;
+	raspberryBody->sprite->setPosition(getSpritePosWithBlockPos(raspberryBody->row, raspberryBody->col));
+	this->addChild(raspberry);
     
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->setSwallowTouches(true);
@@ -48,12 +66,18 @@ bool LittleSnake::init()
 	initialTouchPos = Point::ZERO;
 	this->currentTouchPos = Point::ZERO;
 
+	this->schedule(schedule_selector(LittleSnake::updateSnake), SNAKE_MOVE_INTERVAL, kRepeatForever, 1);
 	this->scheduleUpdate();
     
     return true;
 }
 
 void LittleSnake::update(float dt)
+{
+	processTouch(dt);
+}
+
+void LittleSnake::processTouch(float dt)
 {
 	if (isTouchDown)
 	{
@@ -83,6 +107,20 @@ void LittleSnake::update(float dt)
 	}
 }
 
+void LittleSnake::updateSnake(float dt)
+{
+	//Point curSnakePos = snake->getPosition();
+	//snake->setPosition(curSnakePos.x + BLOCK_PIXEL_SIZE, curSnakePos.y);
+	// take care of multiple bodies in one spot
+
+	for (auto snakeBody : snakeBodies)
+	{
+		snakeBody->col++;
+	}
+
+	renderSnake(dt);	// temporary place
+}
+
 bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
 {
 	initialTouchPos = touch->getLocation();
@@ -108,9 +146,22 @@ void LittleSnake::onTouchCancelled(Touch* touch, Event* event)
 	onTouchEnded(touch, event);
 }
 
-void LittleSnake::clearMap()
+void LittleSnake::renderSnake(float dt)
 {
-	for (int i = 0; i < MAX_MAP_X; ++i)
-		for (int j = 0; j < MAX_MAP_Y; ++j)
-			map[i][j] = new std::vector<Sprite>();
+	// remove map and iterate through snakebodies to render snake
+	auto snakeHalfSize = snake->getBoundingBox().size.width / 2;
+
+	for (auto it = snakeBodies.begin(); it != snakeBodies.end(); ++it)
+	{
+		SpriteBody *snakeBody = *it;
+		snakeBody->sprite->setPosition(getSpritePosWithBlockPos(snakeBody->row, snakeBody->col));
+	}
+}
+
+Point LittleSnake::getSpritePosWithBlockPos(int row, int col)
+{
+	// Assumes all sprites have the same pixel size as the block
+	int y = directorOrigin.y + row * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2;
+	int x = directorOrigin.x + col * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2;
+	return Point(x, y);
 }
