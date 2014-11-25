@@ -30,18 +30,38 @@ bool LittleSnake::init()
     directorSize = Director::getInstance()->getVisibleSize();
     directorOrigin = Director::getInstance()->getVisibleOrigin();
 
+    auto background = Sprite::create("background.png");
+    background->setScale(0.5);  // TODO: remove later
+    background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2, directorOrigin.y + background->getBoundingBox().size.height/2);
+    this->addChild(background);
+
 	snakeBodies = std::vector<SpriteBody*>();
 
-	snake = Sprite::create("SnakeBody.png");
-	this->addChild(snake);
+	snakeHead = Sprite::create("SnakeHeadStandard.png");
+    snakeHead->setRotation(-90);
+	this->addChild(snakeHead);
 
-	SpriteBody *snakeHeadBody = new SpriteBody();
-	snakeHeadBody->sprite = snake;
+	SpriteBody *snakeHeadBody = new SpriteBody();   // check if i need to delete these when restarting
+	snakeHeadBody->sprite = snakeHead;
 	snakeBodies.push_back(snakeHeadBody);
 
 	snakeHeadBody->row = MAX_MAP_Y / 2;
 	snakeHeadBody->col = MAX_MAP_X / 2;
 	snakeHeadBody->sprite->setPosition(getSpritePosWithBlockPos(snakeHeadBody->row, snakeHeadBody->col));
+
+    for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT; ++i)
+    {
+        auto snakeBody = Sprite::create("SnakeBody.png");
+        this->addChild(snakeBody);
+
+        auto *snakeBodyBody = new SpriteBody();
+        snakeBodyBody->sprite = snakeBody;
+        snakeBodies.push_back(snakeBodyBody);
+
+        snakeBodyBody->row = snakeHeadBody->row;
+        snakeBodyBody->col = snakeHeadBody->col - (i+1);
+        snakeBodyBody->sprite->setPosition(getSpritePosWithBlockPos(snakeBodyBody->row, snakeBodyBody->col));
+    }
 
 	raspberry = Sprite::create("Raspberry.png");
 	//check collision with snake body when spawning
@@ -149,7 +169,7 @@ void LittleSnake::onTouchCancelled(Touch* touch, Event* event)
 void LittleSnake::renderSnake(float dt)
 {
 	// remove map and iterate through snakebodies to render snake
-	auto snakeHalfSize = snake->getBoundingBox().size.width / 2;
+	auto snakeHalfSize = snakeHead->getBoundingBox().size.width / 2;
 
 	for (auto it = snakeBodies.begin(); it != snakeBodies.end(); ++it)
 	{

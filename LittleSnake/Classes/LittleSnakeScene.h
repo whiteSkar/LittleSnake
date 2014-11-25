@@ -8,7 +8,9 @@ const int MAX_MAP_X = 48/2;	// HD screen ratio with 40 * 40 blocks
 const int MAX_MAP_Y = 27/2;	// TODO: remove / 2
 
 const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.10;
-const float SNAKE_MOVE_INTERVAL = 1;
+const float SNAKE_MOVE_INTERVAL = 0.5;
+const int INITIAL_SNAKE_BODY_COUNT = 4;
+const int MAX_SNAKE_BODY_COUNT = 20;
 
 typedef struct {
 	cocos2d::Sprite *sprite;
@@ -45,7 +47,7 @@ private:
 	cocos2d::Size directorSize;
 	cocos2d::Point directorOrigin;
 
-	cocos2d::Sprite *snake;
+	cocos2d::Sprite *snakeHead;
 	cocos2d::Sprite *raspberry;
 
 	void processTouch(float dt);
