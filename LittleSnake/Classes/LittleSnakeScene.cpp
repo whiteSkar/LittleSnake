@@ -37,13 +37,14 @@ bool LittleSnake::init()
 
 	snakeBodies = std::vector<SpriteBody*>();
 
-	snakeHead = Sprite::create("SnakeHeadStandard.png");
-    snakeHead->setRotation(-90);
+    snakeDirection = RIGHT; // TODO: refactor initialization code
+	auto snakeHead = Sprite::create("SnakeHeadStandard.png");
+    snakeHead->setRotation(snakeDirection);
+    snakeHead->setLocalZOrder(2);
 	this->addChild(snakeHead);
 
-	SpriteBody *snakeHeadBody = new SpriteBody();   // check if i need to delete these when restarting
+	snakeHeadBody = new SpriteBody();   // check if i need to delete these when restarting
 	snakeHeadBody->sprite = snakeHead;
-	snakeBodies.push_back(snakeHeadBody);
 
 	snakeHeadBody->row = MAX_MAP_Y / 2;
 	snakeHeadBody->col = MAX_MAP_X / 2;
@@ -52,6 +53,7 @@ bool LittleSnake::init()
     for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT; ++i)
     {
         auto snakeBody = Sprite::create("SnakeBody.png");
+        snakeBody->setLocalZOrder(1);
         this->addChild(snakeBody);
 
         auto *snakeBodyBody = new SpriteBody();
@@ -95,6 +97,8 @@ bool LittleSnake::init()
 void LittleSnake::update(float dt)
 {
 	processTouch(dt);
+
+    snakeHeadBody->sprite->setRotation(snakeDirection);
 }
 
 void LittleSnake::processTouch(float dt)
@@ -108,37 +112,68 @@ void LittleSnake::processTouch(float dt)
 		{
 			log("Swipe Right");
 			isTouchDown = false;
+            if (snakeDirection != LEFT)
+                snakeDirection = RIGHT;
 		}
 		else if (currentTouchPos.x - initialTouchPos.x < -swipeHorizontalThresholdDistance)
 		{
 			log("Swipe Left");
 			isTouchDown = false;
+            if (snakeDirection != RIGHT)
+                snakeDirection = LEFT;
 		}
 		else if (currentTouchPos.y - initialTouchPos.y > swipeVerticalThresholdDistance)
 		{
 			log("Swipe Up");
 			isTouchDown = false;
+            if (snakeDirection != DOWN)
+                snakeDirection = UP;
 		}
 		else if (currentTouchPos.y - initialTouchPos.y < -swipeVerticalThresholdDistance)
 		{
 			log("Swipe Down");
 			isTouchDown = false;
+            if (snakeDirection != UP)
+                snakeDirection = DOWN;
 		}
 	}
 }
 
 void LittleSnake::updateSnake(float dt)
 {
-	//Point curSnakePos = snake->getPosition();
-	//snake->setPosition(curSnakePos.x + BLOCK_PIXEL_SIZE, curSnakePos.y);
 	// take care of multiple bodies in one spot
+
+    int prevBodyRow = snakeHeadBody->row;
+    int prevBodyCol = snakeHeadBody->col;
+
+    if (snakeDirection == RIGHT)
+    {
+        snakeHeadBody->col++;
+    }
+    else if (snakeDirection == LEFT)
+    {
+        snakeHeadBody->col--;
+    }
+    else if (snakeDirection == UP)
+    {
+        snakeHeadBody->row++;
+    }
+    else
+    {
+        snakeHeadBody->row--;
+    }
 
 	for (auto snakeBody : snakeBodies)
 	{
-		snakeBody->col++;
+        int tempRow = snakeBody->row;
+        int tempCol = snakeBody->col;
+		snakeBody->row = prevBodyRow;
+        snakeBody->col = prevBodyCol;
+        prevBodyRow = tempRow;
+        prevBodyCol = tempCol;
 	}
 
-	renderSnake(dt);	// temporary place
+	renderSnake(dt);
 }
 
 bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
@@ -150,26 +185,9 @@ bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
 
 	return true;
 }
-
-void LittleSnake::onTouchMoved(Touch* touch, Event* event)
-{
-	currentTouchPos = touch->getLocation();
-}
-
-void LittleSnake::onTouchEnded(Touch* touch, Event* event)
-{
-	isTouchDown = false;
-}
-
-void LittleSnake::onTouchCancelled(Touch* touch, Event* event)
-{
-	onTouchEnded(touch, event);
-}
-
 void LittleSnake::renderSnake(float dt)
 {
-	// remove map and iterate through snakebodies to render snake
-	auto snakeHalfSize = snakeHead->getBoundingBox().size.width / 2;
+    snakeHeadBody->sprite->setPosition(getSpritePosWithBlockPos(snakeHeadBody->row, snakeHeadBody->col));
 
 	for (auto it = snakeBodies.begin(); it != snakeBodies.end(); ++it)
 	{
@@ -184,4 +202,20 @@ Point LittleSnake::getSpritePosWithBlockPos(int row, int col)
 	int y = directorOrigin.y + row * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2;
 	int x = directorOrigin.x + col * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2;
 	return Point(x, y);
+}
+
+
+void LittleSnake::onTouchMoved(Touch* touch, Event* event)
+{
+	currentTouchPos = touch->getLocation();
+}
+
+void LittleSnake::onTouchEnded(Touch* touch, Event* event)
+{
+	isTouchDown = false;
+}
+
+void LittleSnake::onTouchCancelled(Touch* touch, Event* event)
+{
+	onTouchEnded(touch, event);
 }

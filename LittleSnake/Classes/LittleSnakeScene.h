@@ -18,6 +18,13 @@ typedef struct {
 	int col;
 } SpriteBody;
 
+enum Direction {
+    RIGHT = -90,
+    LEFT = 90,
+    UP = 180,
+    DOWN = 0
+};
+
 class LittleSnake : public cocos2d::Layer
 {
 public:
@@ -47,8 +54,10 @@ private:
 	cocos2d::Size directorSize;
 	cocos2d::Point directorOrigin;
 
-	cocos2d::Sprite *snakeHead;
+	SpriteBody *snakeHeadBody;
 	cocos2d::Sprite *raspberry;
+
+    Direction snakeDirection;
 
 	void processTouch(float dt);
 	void updateSnake(float dt);
