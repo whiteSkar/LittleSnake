@@ -218,6 +218,9 @@ void LittleSnake::updateSnake(float dt)
 void LittleSnake::setGameStateToPlayAgain()
 {
     gameState = PLAYAGAIN;
+    updateSnakeFace(snakePlayAgainFace);
+    rotateSnakeHead(0);
+    renderSnake(0);
 }
 
  void LittleSnake::rotateSnakeHead(int angle)
