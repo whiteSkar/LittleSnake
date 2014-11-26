@@ -36,22 +36,9 @@ bool LittleSnake::init()
     this->addChild(background);
 
     loadSnakeFaces();
+    addSnakeFacesAsChild();
 
-	snakeBodies = std::vector<SpriteBody*>();
-
-    snakeDirection = RIGHT; // TODO: refactor initialization code
-
-	snakeHeadBody = new SpriteBody();   // check if i need to delete these when restarting
-    snakeHeadBody->row = MAX_MAP_Y / 2;
-	snakeHeadBody->col = MAX_MAP_X / 2;
-    updateSnakeFace(snakeStandardFace);
-
-    for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT; ++i)
-    {
-        addSnakeBodySpriteBody(snakeHeadBody->row, snakeHeadBody->col - (i+1));
-    }
-
-    renderSnake(0);
+    initializeSnake();
 
     raspberryBody = nullptr;
     spawnRaspberry();
@@ -78,9 +65,43 @@ bool LittleSnake::init()
     return true;
 }
 
+void LittleSnake::initializeSnake()
+{
+    snakeDirection = RIGHT;
+    snakeBodies = std::vector<SpriteBody*>();
+
+	snakeHeadBody = new SpriteBody();   // check if i need to delete these when restarting
+    snakeHeadBody->row = MAX_MAP_Y / 2;
+	snakeHeadBody->col = MAX_MAP_X / 2;
+
+    updateSnakeFace(snakeStandardFace);
+
+    for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT; ++i)
+    {
+        addSnakeBodySpriteBody(snakeHeadBody->row, snakeHeadBody->col - (i+1));
+    }
+
+    renderSnake(0);
+}
+
+void LittleSnake::deleteSnake()
+{
+    for (int i = 0; i < snakeBodies.size(); ++i)
+    {
+        this->removeChild(snakeBodies[i]->sprite);
+        delete(snakeBodies[i]);
+    }
+
+    hideSnakeFaces();   // should delete. Refactor to have both hide && remove
+    snakeBodies.clear();
+}
+
 void LittleSnake::update(float dt)
 {
-    if (gameState != PLAYING) return;
+    if (gameState != PLAYING) 
+    {
+        return;
+    }
 
 	processSwipe(dt);
 
@@ -160,6 +181,10 @@ void LittleSnake::updateSnake(float dt)
         renderSnake(dt);
 
         gameState = DEAD;
+        auto setGameStateAction = CallFunc::create(CC_CALLBACK_0(LittleSnake::setGameStateToPlayAgain, this));
+        auto delayAction = DelayTime::create(0.5);
+        this->runAction(Sequence::createWithTwoActions(delayAction, setGameStateAction));
+
         return;
     }
 
@@ -190,6 +215,11 @@ void LittleSnake::updateSnake(float dt)
     renderSnake(dt);
 }
 
+void LittleSnake::setGameStateToPlayAgain()
+{
+    gameState = PLAYAGAIN;
+}
+
  void LittleSnake::rotateSnakeHead(int angle)
  {
      snakeHeadBody->sprite->setRotation(angle);
@@ -211,11 +241,30 @@ void LittleSnake::loadSnakeFaces()
     snakeYummyFace->setVisible(false);
     snakeDeadFace->setVisible(false);
     snakePlayAgainFace->setVisible(false);
+}
 
+void LittleSnake::addSnakeFacesAsChild()
+{
     this->addChild(snakeStandardFace);
     this->addChild(snakeYummyFace);
     this->addChild(snakeDeadFace);
     this->addChild(snakePlayAgainFace);
+}
+
+void LittleSnake::removeSnakeFacesAsChild()
+{
+    this->removeChild(snakeStandardFace);
+    this->removeChild(snakeYummyFace);
+    this->removeChild(snakeDeadFace);
+    this->removeChild(snakePlayAgainFace);
+}
+
+void LittleSnake::hideSnakeFaces()
+{
+    snakeStandardFace->setVisible(false);
+    snakeYummyFace->setVisible(false);
+    snakeDeadFace->setVisible(false);
+    snakePlayAgainFace->setVisible(false);
 }
 
 void LittleSnake::updateSnakeFace(Sprite *snakeFace)
@@ -274,6 +323,17 @@ bool LittleSnake::isSnakeDead()
 
 bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
 {
+    if (gameState == PLAYAGAIN)
+    {
+        deleteSnake();
+        initializeSnake();
+        gameState = REINITIALIZED;
+    }
+    else if (gameState == REINITIALIZED)
+    {
+        gameState = PLAYING;
+    }
+
 	initialTouchPos = touch->getLocation();
 	currentTouchPos = touch->getLocation();
 	

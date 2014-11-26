@@ -29,6 +29,7 @@ enum GameState {
     INITIALIZED,
     PLAYING,
     DEAD,
+    PLAYAGAIN,
     REINITIALIZED
 };
 
@@ -74,6 +75,12 @@ private:
     cocos2d::Sprite *snakePlayAgainFace;
 
     void loadSnakeFaces();
+    void hideSnakeFaces();
+    void addSnakeFacesAsChild();
+    void removeSnakeFacesAsChild();
+
+    void initializeSnake();
+    void deleteSnake();
 
     void addSnakeBodySpriteBody(int row, int col);
     void spawnRaspberry();
@@ -85,6 +92,8 @@ private:
     void rotateSnakeHead(int angle);
 
     void updateSnakeFace(cocos2d::Sprite *snakeFace);
+
+    void setGameStateToPlayAgain();
 
     bool isSnakeEatingRaspberry();
     bool isSnakeCollidingWithRaspberry();
