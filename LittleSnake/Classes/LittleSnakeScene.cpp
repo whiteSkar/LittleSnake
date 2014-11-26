@@ -52,27 +52,11 @@ bool LittleSnake::init()
 
     for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT; ++i)
     {
-        auto snakeBody = Sprite::create("SnakeBody.png");
-        snakeBody->setLocalZOrder(1);
-        this->addChild(snakeBody);
-
-        auto *snakeBodyBody = new SpriteBody();
-        snakeBodyBody->sprite = snakeBody;
-        snakeBodies.push_back(snakeBodyBody);
-
-        snakeBodyBody->row = snakeHeadBody->row;
-        snakeBodyBody->col = snakeHeadBody->col - (i+1);
-        snakeBodyBody->sprite->setPosition(getSpritePosWithBlockPos(snakeBodyBody->row, snakeBodyBody->col));
+        addSnakeBodySpriteBody(snakeHeadBody->row, snakeHeadBody->col - (i+1));
     }
 
-	raspberry = Sprite::create("Raspberry.png");
-	//check collision with snake body when spawning
-	SpriteBody *raspberryBody = new SpriteBody();
-	raspberryBody->sprite = raspberry;
-	raspberryBody->row = rand() % MAX_MAP_Y;
-	raspberryBody->col = rand() % MAX_MAP_X;
-	raspberryBody->sprite->setPosition(getSpritePosWithBlockPos(raspberryBody->row, raspberryBody->col));
-	this->addChild(raspberry);
+    raspberryBody = nullptr;
+    spawnRaspberry();
     
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->setSwallowTouches(true);
@@ -174,6 +158,52 @@ void LittleSnake::updateSnake(float dt)
 	}
 
 	renderSnake(dt);
+
+    if (isSnakeEatingRaspberry())
+    {
+        SpriteBody *lastSnakeBody = snakeBodies.back();
+        addSnakeBodySpriteBody(lastSnakeBody->row, lastSnakeBody->col);
+
+        spawnRaspberry();
+    }
+}
+
+void LittleSnake::spawnRaspberry()
+{
+    if (!raspberryBody)
+    {
+        auto raspberry = Sprite::create("Raspberry.png");
+	    //check collision with snake body when spawning
+	    raspberryBody = new SpriteBody();
+	    raspberryBody->sprite = raspberry;
+        this->addChild(raspberry);
+    }
+
+    do
+    {
+	    raspberryBody->row = rand() % MAX_MAP_Y;
+	    raspberryBody->col = rand() % MAX_MAP_X;
+    } while (isSnakeCollidingWithRaspberry());
+
+	raspberryBody->sprite->setPosition(getSpritePosWithBlockPos(raspberryBody->row, raspberryBody->col));
+}
+
+bool LittleSnake::isSnakeEatingRaspberry()
+{
+    if (snakeHeadBody->row == raspberryBody->row && snakeHeadBody->col == raspberryBody->col)
+        return true;
+    return false;
+}
+
+bool LittleSnake::isSnakeCollidingWithRaspberry()
+{
+    for (auto snakeBody : snakeBodies)
+    {
+        if (snakeBody->row == raspberryBody->row && snakeBody->col == raspberryBody->col)
+            return true;
+    }
+
+    return false;
 }
 
 bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
@@ -204,6 +234,20 @@ Point LittleSnake::getSpritePosWithBlockPos(int row, int col)
 	return Point(x, y);
 }
 
+void LittleSnake::addSnakeBodySpriteBody(int row, int col)
+{
+    auto snakeBody = Sprite::create("SnakeBody.png");
+    snakeBody->setLocalZOrder(1);
+    this->addChild(snakeBody);
+
+    auto *snakeBodyBody = new SpriteBody();
+    snakeBodyBody->sprite = snakeBody;
+    snakeBodies.push_back(snakeBodyBody);
+
+    snakeBodyBody->row = row;
+    snakeBodyBody->col = col;
+    snakeBodyBody->sprite->setPosition(getSpritePosWithBlockPos(snakeBodyBody->row, snakeBodyBody->col));
+}
 
 void LittleSnake::onTouchMoved(Touch* touch, Event* event)
 {

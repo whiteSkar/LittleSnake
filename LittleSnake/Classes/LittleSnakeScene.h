@@ -55,14 +55,20 @@ private:
 	cocos2d::Point directorOrigin;
 
 	SpriteBody *snakeHeadBody;
-	cocos2d::Sprite *raspberry;
+	SpriteBody *raspberryBody;
 
     Direction snakeDirection;
+
+    void addSnakeBodySpriteBody(int row, int col);
+    void spawnRaspberry();
 
 	void processTouch(float dt);
 	void updateSnake(float dt);
 
 	void renderSnake(float dt);
+
+    bool isSnakeEatingRaspberry();
+    bool isSnakeCollidingWithRaspberry();
 
 	cocos2d::Point getSpritePosWithBlockPos(int blockPosX, int blockPosY);
 };
