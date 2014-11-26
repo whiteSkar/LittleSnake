@@ -8,7 +8,7 @@ const int MAX_MAP_X = 48/2;	// HD screen ratio with 40 * 40 blocks
 const int MAX_MAP_Y = 27/2;	// TODO: remove / 2
 
 const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.10;
-const float SNAKE_MOVE_INTERVAL = 0.5;
+const float SNAKE_MOVE_INTERVAL = 0.3;
 const int INITIAL_SNAKE_BODY_COUNT = 4;
 const int MAX_SNAKE_BODY_COUNT = 20;
 
@@ -23,6 +23,13 @@ enum Direction {
     LEFT = 90,
     UP = 180,
     DOWN = 0
+};
+
+enum GameState {
+    INITIALIZED,
+    PLAYING,
+    DEAD,
+    REINITIALIZED
 };
 
 class LittleSnake : public cocos2d::Layer
@@ -49,6 +56,8 @@ public:
 	cocos2d::Point currentTouchPos;
 
 private:
+    GameState gameState;
+
 	std::vector<SpriteBody*> snakeBodies;
 
 	cocos2d::Size directorSize;
@@ -59,16 +68,27 @@ private:
 
     Direction snakeDirection;
 
+    cocos2d::Sprite *snakeStandardFace;
+    cocos2d::Sprite *snakeYummyFace;
+    cocos2d::Sprite *snakeDeadFace;
+    cocos2d::Sprite *snakePlayAgainFace;
+
+    void loadSnakeFaces();
+
     void addSnakeBodySpriteBody(int row, int col);
     void spawnRaspberry();
 
-	void processTouch(float dt);
+	void processSwipe(float dt);
 	void updateSnake(float dt);
 
 	void renderSnake(float dt);
+    void rotateSnakeHead(int angle);
+
+    void updateSnakeFace(cocos2d::Sprite *snakeFace);
 
     bool isSnakeEatingRaspberry();
     bool isSnakeCollidingWithRaspberry();
+    bool isSnakeDead();
 
 	cocos2d::Point getSpritePosWithBlockPos(int blockPosX, int blockPosY);
 };

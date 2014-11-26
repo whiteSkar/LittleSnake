@@ -35,25 +35,23 @@ bool LittleSnake::init()
     background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2, directorOrigin.y + background->getBoundingBox().size.height/2);
     this->addChild(background);
 
+    loadSnakeFaces();
+
 	snakeBodies = std::vector<SpriteBody*>();
 
     snakeDirection = RIGHT; // TODO: refactor initialization code
-	auto snakeHead = Sprite::create("SnakeHeadStandard.png");
-    snakeHead->setRotation(snakeDirection);
-    snakeHead->setLocalZOrder(2);
-	this->addChild(snakeHead);
 
 	snakeHeadBody = new SpriteBody();   // check if i need to delete these when restarting
-	snakeHeadBody->sprite = snakeHead;
-
-	snakeHeadBody->row = MAX_MAP_Y / 2;
+    snakeHeadBody->row = MAX_MAP_Y / 2;
 	snakeHeadBody->col = MAX_MAP_X / 2;
-	snakeHeadBody->sprite->setPosition(getSpritePosWithBlockPos(snakeHeadBody->row, snakeHeadBody->col));
+    updateSnakeFace(snakeStandardFace);
 
     for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT; ++i)
     {
         addSnakeBodySpriteBody(snakeHeadBody->row, snakeHeadBody->col - (i+1));
     }
+
+    renderSnake(0);
 
     raspberryBody = nullptr;
     spawnRaspberry();
@@ -74,18 +72,22 @@ bool LittleSnake::init()
 
 	this->schedule(schedule_selector(LittleSnake::updateSnake), SNAKE_MOVE_INTERVAL, kRepeatForever, 1);
 	this->scheduleUpdate();
+
+    gameState = PLAYING;
     
     return true;
 }
 
 void LittleSnake::update(float dt)
 {
-	processTouch(dt);
+    if (gameState != PLAYING) return;
 
-    snakeHeadBody->sprite->setRotation(snakeDirection);
+	processSwipe(dt);
+
+    rotateSnakeHead(snakeDirection);
 }
 
-void LittleSnake::processTouch(float dt)
+void LittleSnake::processSwipe(float dt)
 {
 	if (isTouchDown)
 	{
@@ -125,7 +127,7 @@ void LittleSnake::processTouch(float dt)
 
 void LittleSnake::updateSnake(float dt)
 {
-	// take care of multiple bodies in one spot
+	if (gameState != PLAYING) return;
 
     int prevBodyRow = snakeHeadBody->row;
     int prevBodyCol = snakeHeadBody->col;
@@ -147,6 +149,20 @@ void LittleSnake::updateSnake(float dt)
         snakeHeadBody->row--;
     }
 
+    if (isSnakeDead())
+    {
+        updateSnakeFace(snakeDeadFace);
+        rotateSnakeHead(snakeDirection);
+
+        snakeHeadBody->row = prevBodyRow;
+        snakeHeadBody->col = prevBodyCol;
+
+        renderSnake(dt);
+
+        gameState = DEAD;
+        return;
+    }
+
 	for (auto snakeBody : snakeBodies)
 	{
         int tempRow = snakeBody->row;
@@ -157,15 +173,58 @@ void LittleSnake::updateSnake(float dt)
         prevBodyCol = tempCol;
 	}
 
-	renderSnake(dt);
-
     if (isSnakeEatingRaspberry())
     {
+        updateSnakeFace(snakeYummyFace);
+
         SpriteBody *lastSnakeBody = snakeBodies.back();
         addSnakeBodySpriteBody(lastSnakeBody->row, lastSnakeBody->col);
 
         spawnRaspberry();
     }
+    else
+    {
+        updateSnakeFace(snakeStandardFace);
+    }
+
+    renderSnake(dt);
+}
+
+ void LittleSnake::rotateSnakeHead(int angle)
+ {
+     snakeHeadBody->sprite->setRotation(angle);
+ }
+
+void LittleSnake::loadSnakeFaces()
+{
+    snakeStandardFace = Sprite::create("SnakeHeadStandard.png");
+    snakeYummyFace = Sprite::create("SnakeHeadYummy.png");
+    snakeDeadFace = Sprite::create("SnakeHeadDead.png");
+    snakePlayAgainFace = Sprite::create("SnakeHeadPlayAgain.png");
+
+    snakeStandardFace->setLocalZOrder(2);
+    snakeYummyFace->setLocalZOrder(2);
+    snakeDeadFace->setLocalZOrder(2);
+    snakePlayAgainFace->setLocalZOrder(2);
+
+    snakeStandardFace->setVisible(false);
+    snakeYummyFace->setVisible(false);
+    snakeDeadFace->setVisible(false);
+    snakePlayAgainFace->setVisible(false);
+
+    this->addChild(snakeStandardFace);
+    this->addChild(snakeYummyFace);
+    this->addChild(snakeDeadFace);
+    this->addChild(snakePlayAgainFace);
+}
+
+void LittleSnake::updateSnakeFace(Sprite *snakeFace)
+{
+    if (snakeHeadBody->sprite)
+        snakeHeadBody->sprite->setVisible(false);
+
+    snakeHeadBody->sprite = snakeFace;
+    snakeHeadBody->sprite->setVisible(true);
 }
 
 void LittleSnake::spawnRaspberry()
@@ -203,6 +262,13 @@ bool LittleSnake::isSnakeCollidingWithRaspberry()
             return true;
     }
 
+    return false;
+}
+
+bool LittleSnake::isSnakeDead()
+{
+    if (snakeHeadBody->row < 0 || snakeHeadBody->row >= MAX_MAP_Y || snakeHeadBody->col < 0 || snakeHeadBody->col >= MAX_MAP_X)
+        return true;
     return false;
 }
 
@@ -246,7 +312,6 @@ void LittleSnake::addSnakeBodySpriteBody(int row, int col)
 
     snakeBodyBody->row = row;
     snakeBodyBody->col = col;
-    snakeBodyBody->sprite->setPosition(getSpritePosWithBlockPos(snakeBodyBody->row, snakeBodyBody->col));
 }
 
 void LittleSnake::onTouchMoved(Touch* touch, Event* event)
