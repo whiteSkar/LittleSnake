@@ -68,6 +68,7 @@ private:
 	SpriteBody *raspberryBody;
 
     Direction snakeDirection;
+    Direction snakeNewDirection;
 
     cocos2d::Sprite *snakeStandardFace;
     cocos2d::Sprite *snakeYummyFace;
@@ -97,6 +98,7 @@ private:
 
     bool isSnakeEatingRaspberry();
     bool isSnakeCollidingWithRaspberry();
+    bool isSnakeEatingItsOwnBody();
     bool isSnakeDead();
 
 	cocos2d::Point getSpritePosWithBlockPos(int blockPosX, int blockPosY);

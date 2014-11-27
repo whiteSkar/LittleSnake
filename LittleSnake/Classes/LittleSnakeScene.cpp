@@ -68,6 +68,7 @@ bool LittleSnake::init()
 void LittleSnake::initializeSnake()
 {
     snakeDirection = RIGHT;
+    snakeNewDirection = RIGHT;
     snakeBodies = std::vector<SpriteBody*>();
 
 	snakeHeadBody = new SpriteBody();   // check if i need to delete these when restarting
@@ -75,6 +76,7 @@ void LittleSnake::initializeSnake()
 	snakeHeadBody->col = MAX_MAP_X / 2;
 
     updateSnakeFace(snakeStandardFace);
+    rotateSnakeHead(snakeDirection);
 
     for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT; ++i)
     {
@@ -105,7 +107,7 @@ void LittleSnake::update(float dt)
 
 	processSwipe(dt);
 
-    rotateSnakeHead(snakeDirection);
+    rotateSnakeHead(snakeNewDirection);
 }
 
 void LittleSnake::processSwipe(float dt)
@@ -120,28 +122,28 @@ void LittleSnake::processSwipe(float dt)
 			log("Swipe Right");
 			isTouchDown = false;
             if (snakeDirection != LEFT)
-                snakeDirection = RIGHT;
+                snakeNewDirection = RIGHT;
 		}
 		else if (currentTouchPos.x - initialTouchPos.x < -swipeHorizontalThresholdDistance)
 		{
 			log("Swipe Left");
 			isTouchDown = false;
             if (snakeDirection != RIGHT)
-                snakeDirection = LEFT;
+                snakeNewDirection = LEFT;
 		}
 		else if (currentTouchPos.y - initialTouchPos.y > swipeVerticalThresholdDistance)
 		{
 			log("Swipe Up");
 			isTouchDown = false;
             if (snakeDirection != DOWN)
-                snakeDirection = UP;
+                snakeNewDirection = UP;
 		}
 		else if (currentTouchPos.y - initialTouchPos.y < -swipeVerticalThresholdDistance)
 		{
 			log("Swipe Down");
 			isTouchDown = false;
             if (snakeDirection != UP)
-                snakeDirection = DOWN;
+                snakeNewDirection = DOWN;
 		}
 	}
 }
@@ -152,6 +154,8 @@ void LittleSnake::updateSnake(float dt)
 
     int prevBodyRow = snakeHeadBody->row;
     int prevBodyCol = snakeHeadBody->col;
+
+    snakeDirection = snakeNewDirection;
 
     if (snakeDirection == RIGHT)
     {
@@ -219,7 +223,7 @@ void LittleSnake::setGameStateToPlayAgain()
 {
     gameState = PLAYAGAIN;
     updateSnakeFace(snakePlayAgainFace);
-    rotateSnakeHead(0);
+    rotateSnakeHead(snakeDirection);
     renderSnake(0);
 }
 
@@ -317,10 +321,25 @@ bool LittleSnake::isSnakeCollidingWithRaspberry()
     return false;
 }
 
+bool LittleSnake::isSnakeEatingItsOwnBody()
+{
+    for (auto snakeBody : snakeBodies)
+    {
+        if (snakeBody->row == snakeHeadBody->row && snakeBody->col == snakeHeadBody->col)
+            return true;
+    }
+
+    return false;
+}
+
 bool LittleSnake::isSnakeDead()
 {
     if (snakeHeadBody->row < 0 || snakeHeadBody->row >= MAX_MAP_Y || snakeHeadBody->col < 0 || snakeHeadBody->col >= MAX_MAP_X)
         return true;
+
+    if (isSnakeEatingItsOwnBody())
+        return true;
+
     return false;
 }
 
