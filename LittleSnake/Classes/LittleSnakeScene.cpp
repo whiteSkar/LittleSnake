@@ -321,12 +321,28 @@ bool LittleSnake::isSnakeCollidingWithRaspberry()
     return false;
 }
 
+// This method is called before snake bodies are moved. Therefore, last snake body theoretically cannot be eaten
 bool LittleSnake::isSnakeEatingItsOwnBody()
 {
+    auto lastSnakeBody = snakeBodies.back();
     for (auto snakeBody : snakeBodies)
     {
         if (snakeBody->row == snakeHeadBody->row && snakeBody->col == snakeHeadBody->col)
-            return true;
+        {
+            if (snakeBody == lastSnakeBody)
+            {
+                auto secondLastSnakeBody = snakeBodies.at(snakeBodies.size()-2);
+                if (lastSnakeBody->row == secondLastSnakeBody->row && lastSnakeBody->col == secondLastSnakeBody->col)
+                {
+                    // case where snake just ate raspberry. So there are two snake bodies at the same position
+                    return true;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
     }
 
     return false;
