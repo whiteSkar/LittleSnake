@@ -22,8 +22,10 @@ Scene* LittleSnake::createScene()
  * -- Easy mode starts with slower speed, less snake bodies, and fixed # of raspberries to eat
  * -- Hardcore mode starts faster pseed, longer snake bodies, and needs to eat until the snake fills the entire screen
  * --- When the number of snake bodies + 1 (head) >= number of grids, they win (make sure spawn raspberry method is not called this case. it will go into infinite loop)
+ * - A way to go back to the menu possibly
  * - When win, show something.
  * - show number of raspberries eaten
+ * - Do no automatically start the game. It starts while transitioning.. Or give it more delay
  */
 
 // on "init" you need to initialize your instance
@@ -40,7 +42,7 @@ bool LittleSnake::init()
     directorOrigin = Director::getInstance()->getVisibleOrigin();
 
     auto background = Sprite::create("background.png");
-    background->setScale(0.5);  // TODO: remove later
+    //background->setScale(0.5);  // TODO: remove later
     background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2, directorOrigin.y + background->getBoundingBox().size.height/2);
     this->addChild(background);
 

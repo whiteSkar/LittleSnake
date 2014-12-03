@@ -1,5 +1,5 @@
 #include "AppDelegate.h"
-#include "LittleSnakeScene.h"
+#include "MenuScene.h"
 
 USING_NS_CC;
 
@@ -19,9 +19,11 @@ bool AppDelegate::applicationDidFinishLaunching()
     if(!glview) 
 	{
         glview = GLView::create("Little Snake");
-		glview->setFrameSize(960, 540);	// TODO: change to 2x
+		glview->setFrameSize(1920, 1080);
+        glview->setFrameZoomFactor(0.5f);   // TODO: remove this factor
         director->setOpenGLView(glview);
     }
+
 
     // turn on display FPS
     director->setDisplayStats(true);
@@ -30,7 +32,7 @@ bool AppDelegate::applicationDidFinishLaunching()
     director->setAnimationInterval(1.0 / 60);
 
     // create a scene. it's an autorelease object
-    auto scene = LittleSnake::createScene();
+    auto scene = MenuScene::createScene();
 
     // run
     director->runWithScene(scene);

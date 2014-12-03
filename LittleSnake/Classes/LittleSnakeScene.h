@@ -4,8 +4,8 @@
 #include "cocos2d.h"
 
 const int BLOCK_PIXEL_SIZE = 40;	// width and height of the snake body & the each grid block
-const int MAX_MAP_X = 48/2;	// HD screen ratio with 40 * 40 blocks
-const int MAX_MAP_Y = 27/2;	// TODO: remove / 2
+const int MAX_MAP_X = 48;	// HD screen ratio with 40 * 40 blocks
+const int MAX_MAP_Y = 27;	// TODO: remove / 2
 
 const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.03;
 const float SNAKE_MOVE_INTERVAL = 0.3;
