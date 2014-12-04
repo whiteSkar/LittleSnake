@@ -23,7 +23,6 @@ Scene* LittleSnake::createScene()
  * -- Hardcore mode starts faster pseed, longer snake bodies, and needs to eat until the snake fills the entire screen
  * --- When the number of snake bodies + 1 (head) >= number of grids, they win (make sure spawn raspberry method is not called this case. it will go into infinite loop)
  * - A way to go back to the menu possibly
- * - When win, show something.
  * - show number of raspberries eaten
  * - Do no automatically start the game. It starts while transitioning.. Or give it more delay
  */
@@ -73,7 +72,7 @@ bool LittleSnake::init()
 	this->schedule(schedule_selector(LittleSnake::updateSnake), SNAKE_MOVE_INTERVAL, kRepeatForever, 1);
 	this->scheduleUpdate();
 
-    gameState = PLAYING;
+    gameState = INITIALIZED;
     
     return true;
 }
@@ -415,9 +414,10 @@ bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
 
         deleteSnake();
         initializeSnake();
+        spawnRaspberry();
         gameState = REINITIALIZED;
     }
-    else if (gameState == REINITIALIZED)
+    else if (gameState == INITIALIZED || gameState == REINITIALIZED)
     {
         gameState = PLAYING;
     }
