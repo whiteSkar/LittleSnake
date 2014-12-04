@@ -67,6 +67,8 @@ private:
 	cocos2d::Size directorSize;
 	cocos2d::Point directorOrigin;
 
+    cocos2d::Menu *menu;
+
 	SpriteBody *snakeHeadBody;
 	SpriteBody *raspberryBody;
 
@@ -106,6 +108,9 @@ private:
     bool isSnakeCollidingWithRaspberry();
     bool isSnakeEatingItsOwnBody();
     bool isSnakeDead();
+
+    void playAgain(cocos2d::Ref *sender);
+    void exitScene(cocos2d::Ref *sender);
 
 	cocos2d::Point getSpritePosWithBlockPos(int blockPosX, int blockPosY);
 };

@@ -13,6 +13,9 @@ public:
     CREATE_FUNC(MenuScene);
 
 private:
+    cocos2d::Size directorSize;
+	cocos2d::Point directorOrigin;
+
     void startEasyMode(cocos2d::Ref *sender);
     void startHardcoreMode(cocos2d::Ref *sender);
 };

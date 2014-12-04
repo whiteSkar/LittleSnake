@@ -200,6 +200,14 @@ Director::~Director(void)
     s_SharedDirector = nullptr;
 }
 
+Scene* Director::getPreviousScene(void)
+{
+    unsigned int c = _scenesStack.size();
+
+    if (c <= 1) return NULL;
+    return (Scene *) _scenesStack.at(c - 2);
+}
+
 void Director::setDefaultValues(void)
 {
 	Configuration *conf = Configuration::getInstance();
@@ -708,6 +716,23 @@ void Director::popScene(void)
     {
         _sendCleanupToScene = true;
         _nextScene = _scenesStack.at(c - 1);
+    }
+}
+
+void Director::popScene(Scene *trans) 
+{
+    CCAssert(_runningScene != NULL, "running scene should not be null");
+
+    _scenesStack.popBack();
+    unsigned int c = _scenesStack.size();
+
+    if (c == 0) {
+        end();
+    }
+    else 
+    {
+        _sendCleanupToScene = true;
+        _nextScene = trans;
     }
 }
 

@@ -26,6 +26,14 @@ bool MenuScene::init()
         return false;
     }
 
+    directorSize = Director::getInstance()->getVisibleSize();
+    directorOrigin = Director::getInstance()->getVisibleOrigin();
+
+    auto background = Sprite::create("background.png"); // use Different Background. Transition seems weird
+    //background->setScale(0.5);  // TODO: remove later
+    background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2, directorOrigin.y + background->getBoundingBox().size.height/2);
+    this->addChild(background);
+
     auto menuItem1 = MenuItemFont::create("Easy Mode", CC_CALLBACK_1(MenuScene::startEasyMode, this));
     auto menuItem2 = MenuItemFont::create("Hardcore Mode", CC_CALLBACK_1(MenuScene::startHardcoreMode, this));
     menuItem1->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 1, Director::getInstance()->getVisibleSize().height / 2);
@@ -42,12 +50,12 @@ void MenuScene::startEasyMode(Ref *sender)
 {
     auto gameScene = LittleSnake::createScene();
 
-    Director::getInstance()->replaceScene(TransitionMoveInR::create(1.0, gameScene));
+    Director::getInstance()->pushScene(TransitionMoveInR::create(1.0f, gameScene));
 }
 
 void MenuScene::startHardcoreMode(Ref *sender)
 {
     auto gameScene = LittleSnake::createScene();
 
-    Director::getInstance()->replaceScene(TransitionMoveInR::create(1.0, gameScene));
+    Director::getInstance()->pushScene(TransitionMoveInR::create(1.0f, gameScene));
 }

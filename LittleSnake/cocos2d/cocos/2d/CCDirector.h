@@ -131,6 +131,7 @@ public:
 
     /** Get current running Scene. Director can only run one Scene at a time */
     inline Scene* getRunningScene() { return _runningScene; }
+    Scene *getPreviousScene();
 
     /** Get the FPS value */
     inline double getAnimationInterval() { return _animationInterval; }
@@ -248,6 +249,10 @@ public:
      * ONLY call it if there is a running scene.
      */
     void popScene();
+
+    /** Pops out a scene from the stack using transition
+     */
+    void popScene(Scene *trans);
 
     /** Pops out all scenes from the stack until the root scene in the queue.
      * This scene will replace the running one.

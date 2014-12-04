@@ -22,9 +22,7 @@ Scene* LittleSnake::createScene()
  * -- Easy mode starts with slower speed, less snake bodies, and fixed # of raspberries to eat
  * -- Hardcore mode starts faster pseed, longer snake bodies, and needs to eat until the snake fills the entire screen
  * --- When the number of snake bodies + 1 (head) >= number of grids, they win (make sure spawn raspberry method is not called this case. it will go into infinite loop)
- * - A way to go back to the menu possibly
  * - show number of raspberries eaten
- * - Do no automatically start the game. It starts while transitioning.. Or give it more delay
  */
 
 // on "init" you need to initialize your instance
@@ -73,6 +71,16 @@ bool LittleSnake::init()
 	this->scheduleUpdate();
 
     gameState = INITIALIZED;
+
+    auto menuItem1 = MenuItemFont::create("Go Back", CC_CALLBACK_1(LittleSnake::exitScene, this));
+    auto menuItem2 = MenuItemFont::create("Play Again", CC_CALLBACK_1(LittleSnake::playAgain, this));
+    menuItem1->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 1, Director::getInstance()->getVisibleSize().height / 3 * 1);
+    menuItem2->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 2, Director::getInstance()->getVisibleSize().height / 3 * 1);
+
+    menu = Menu::create(menuItem1, menuItem2, NULL);
+    menu->setPosition(0, 0);
+    menu->setVisible(false);
+    this->addChild(menu);
     
     return true;
 }
@@ -271,6 +279,8 @@ void LittleSnake::setGameStateToPlayAgain()
     updateSnakeFace(snakePlayAgainFace);
     rotateSnakeHead(snakeDirection);
     renderSnake(0);
+
+    menu->setVisible(true);
 }
 
  void LittleSnake::rotateSnakeHead(int angle)
@@ -407,17 +417,7 @@ bool LittleSnake::isSnakeDead()
 
 bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
 {
-    if (gameState == PLAYAGAIN)
-    {
-        raspberryAteCount = 0;  // refactor to put in some init method
-        this->removeChild(gameFinishLabel);
-
-        deleteSnake();
-        initializeSnake();
-        spawnRaspberry();
-        gameState = REINITIALIZED;
-    }
-    else if (gameState == INITIALIZED || gameState == REINITIALIZED)
+    if (gameState == INITIALIZED || gameState == REINITIALIZED)
     {
         gameState = PLAYING;
     }
@@ -460,6 +460,25 @@ void LittleSnake::addSnakeBodySpriteBody(int row, int col)
 
     snakeBodyBody->row = row;
     snakeBodyBody->col = col;
+}
+
+void LittleSnake::playAgain(Ref *sender)
+{
+    menu->setVisible(false);
+    
+    raspberryAteCount = 0;  // refactor to put in some init method
+    this->removeChild(gameFinishLabel);
+
+    deleteSnake();
+    initializeSnake();
+    spawnRaspberry();
+    gameState = REINITIALIZED;
+}
+
+void LittleSnake::exitScene(Ref *sender)
+{
+    auto previousScene = Director::getInstance()->getPreviousScene();
+    Director::getInstance()->popScene(TransitionMoveInL::create(1.0f, previousScene));
 }
 
 void LittleSnake::onTouchMoved(Touch* touch, Event* event)
