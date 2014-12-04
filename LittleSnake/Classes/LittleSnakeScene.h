@@ -8,9 +8,11 @@ const int MAX_MAP_X = 48;	// HD screen ratio with 40 * 40 blocks
 const int MAX_MAP_Y = 27;	// TODO: remove / 2
 
 const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.03;
-const float SNAKE_MOVE_INTERVAL = 0.3;
+const float SNAKE_MOVE_INTERVAL = 0.2;
+const float GAME_FINISH_DELAY = 0.5;
 const int INITIAL_SNAKE_BODY_COUNT = 4;
 const int MAX_SNAKE_BODY_COUNT = 20;
+const int EASY_MODE_RASPBERRY_COUNT = 1;
 
 typedef struct {
 	cocos2d::Sprite *sprite;
@@ -29,6 +31,7 @@ enum GameState {
     INITIALIZED,
     PLAYING,
     DEAD,
+    WIN,
     PLAYAGAIN,
     REINITIALIZED
 };
@@ -40,7 +43,7 @@ public:
     static cocos2d::Scene* createScene();
 
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
-    virtual bool init();  
+    virtual bool init();
     
     // implement the "static create()" method manually
     CREATE_FUNC(LittleSnake);
@@ -74,6 +77,9 @@ private:
     cocos2d::Sprite *snakeYummyFace;
     cocos2d::Sprite *snakeDeadFace;
     cocos2d::Sprite *snakePlayAgainFace;
+
+    int raspberryAteCount;
+    cocos2d::Label *gameFinishLabel;
 
     void loadSnakeFaces();
     void hideSnakeFaces();

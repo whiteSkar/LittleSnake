@@ -51,6 +51,8 @@ bool LittleSnake::init()
 
     initializeSnake();
 
+    raspberryAteCount = 0;
+
     raspberryBody = nullptr;
     spawnRaspberry();
     
@@ -195,9 +197,19 @@ void LittleSnake::updateSnake(float dt)
 
         renderSnake(dt);
 
+        gameFinishLabel = Label::createWithTTF("Defeat!", "fonts/Schwarzwald Regular.ttf", 400);    // TODO: Duplicate code. Refactor
+        gameFinishLabel->setColor(Color3B::RED);  // TODO: ask designer for color
+        gameFinishLabel->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height / 3 * 2);
+        gameFinishLabel->setScale(0.2f);
+        gameFinishLabel->setZOrder(999);
+        this->addChild(gameFinishLabel);
+
+        auto scaleAction = ScaleTo::create(GAME_FINISH_DELAY, 1.0f);
+        gameFinishLabel->runAction(scaleAction);
+
         gameState = DEAD;
         auto setGameStateAction = CallFunc::create(CC_CALLBACK_0(LittleSnake::setGameStateToPlayAgain, this));
-        auto delayAction = DelayTime::create(0.5);
+        auto delayAction = DelayTime::create(GAME_FINISH_DELAY);
         this->runAction(Sequence::createWithTwoActions(delayAction, setGameStateAction));
 
         return;
@@ -215,10 +227,34 @@ void LittleSnake::updateSnake(float dt)
 
     if (isSnakeEatingRaspberry())
     {
+        raspberryAteCount++;
+
         updateSnakeFace(snakeYummyFace);
 
         SpriteBody *lastSnakeBody = snakeBodies.back();
         addSnakeBodySpriteBody(lastSnakeBody->row, lastSnakeBody->col);
+
+        if (raspberryAteCount >= EASY_MODE_RASPBERRY_COUNT)
+        {
+            renderSnake(dt);
+
+            gameFinishLabel = Label::createWithTTF("Victory!", "fonts/Schwarzwald Regular.ttf", 400);
+            gameFinishLabel->setColor(Color3B::GREEN);  // TODO: ask designer for color
+            gameFinishLabel->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height / 3 * 2);
+            gameFinishLabel->setScale(0.2f);
+            gameFinishLabel->setZOrder(999);
+            this->addChild(gameFinishLabel);
+
+            auto scaleAction = ScaleTo::create(GAME_FINISH_DELAY, 1.0f);
+            gameFinishLabel->runAction(scaleAction);
+
+            gameState = WIN;
+            auto setGameStateAction = CallFunc::create(CC_CALLBACK_0(LittleSnake::setGameStateToPlayAgain, this));
+            auto delayAction = DelayTime::create(GAME_FINISH_DELAY);
+            this->runAction(Sequence::createWithTwoActions(delayAction, setGameStateAction));
+
+            return;
+        }
 
         spawnRaspberry();
     }
@@ -374,6 +410,9 @@ bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
 {
     if (gameState == PLAYAGAIN)
     {
+        raspberryAteCount = 0;  // refactor to put in some init method
+        this->removeChild(gameFinishLabel);
+
         deleteSnake();
         initializeSnake();
         gameState = REINITIALIZED;
