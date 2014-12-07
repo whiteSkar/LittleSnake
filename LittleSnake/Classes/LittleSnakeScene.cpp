@@ -18,7 +18,6 @@ Scene* LittleSnake::createScene()
 }
 
 /*
- * - Menu that has eays mode and hardcore mode
  * -- Easy mode starts with slower speed, less snake bodies, and fixed # of raspberries to eat
  * -- Hardcore mode starts faster pseed, longer snake bodies, and needs to eat until the snake fills the entire screen
  * --- When the number of snake bodies + 1 (head) >= number of grids, they win (make sure spawn raspberry method is not called this case. it will go into infinite loop)
@@ -49,6 +48,7 @@ bool LittleSnake::init()
     initializeSnake();
 
     raspberryAteCount = 0;
+	dtCount = 0.0;
 
     raspberryBody = nullptr;
     spawnRaspberry();
@@ -67,7 +67,6 @@ bool LittleSnake::init()
 	initialTouchPos = Point::ZERO;
 	this->currentTouchPos = Point::ZERO;
 
-	this->schedule(schedule_selector(LittleSnake::updateSnake), SNAKE_MOVE_INTERVAL, kRepeatForever, 1);
 	this->scheduleUpdate();
 
     gameState = INITIALIZED;
@@ -128,6 +127,8 @@ void LittleSnake::update(float dt)
 	processSwipe(dt);
 
     rotateSnakeHead(snakeNewDirection);
+
+	updateSnake(dt);
 }
 
 void LittleSnake::processSwipe(float dt)
@@ -170,6 +171,16 @@ void LittleSnake::processSwipe(float dt)
 
 void LittleSnake::updateSnake(float dt)
 {
+	dtCount += dt;
+	if (dtCount >= SNAKE_MOVE_INTERVAL)
+	{
+		dtCount -= SNAKE_MOVE_INTERVAL;
+	}
+	else
+	{
+		return;
+	}
+
 	if (gameState != PLAYING) return;
 
     int prevBodyRow = snakeHeadBody->row;

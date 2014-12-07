@@ -83,6 +83,8 @@ private:
     int raspberryAteCount;
     cocos2d::Label *gameFinishLabel;
 
+	float dtCount;
+
     void loadSnakeFaces();
     void hideSnakeFaces();
     void addSnakeFacesAsChild();
