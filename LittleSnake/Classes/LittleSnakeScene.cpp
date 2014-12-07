@@ -97,7 +97,7 @@ void LittleSnake::initializeSnake()
     updateSnakeFace(snakeStandardFace);
     rotateSnakeHead(snakeDirection);
 
-    for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT; ++i)
+    for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT_EASY_MODE; ++i)
     {
         addSnakeBodySpriteBody(snakeHeadBody->row, snakeHeadBody->col - (i+1));
     }
@@ -116,6 +116,19 @@ void LittleSnake::deleteSnake()
     hideSnakeFaces();   // should delete. Refactor to have both hide && remove
     snakeBodies.clear();
 }
+
+void LittleSnake::setupForEasyMode()
+{
+	snakeMoveInterval = SNAKE_MOVE_INTERVAL_EASY_MODE;
+	raspberryToEatCount	= RASPBERRY_TO_EAT_COUNT_EASY_MODE;
+	initialSnakeBodyCount = INITIAL_SNAKE_BODY_COUNT_EASY_MODE;
+}
+
+void LittleSnake::setupForHardcoreMode()
+{
+
+}
+
 
 void LittleSnake::update(float dt)
 {
@@ -172,9 +185,9 @@ void LittleSnake::processSwipe(float dt)
 void LittleSnake::updateSnake(float dt)
 {
 	dtCount += dt;
-	if (dtCount >= SNAKE_MOVE_INTERVAL)
+	if (dtCount >= SNAKE_MOVE_INTERVAL_EASY_MODE)
 	{
-		dtCount -= SNAKE_MOVE_INTERVAL;
+		dtCount -= SNAKE_MOVE_INTERVAL_EASY_MODE;
 	}
 	else
 	{
@@ -252,7 +265,7 @@ void LittleSnake::updateSnake(float dt)
         SpriteBody *lastSnakeBody = snakeBodies.back();
         addSnakeBodySpriteBody(lastSnakeBody->row, lastSnakeBody->col);
 
-        if (raspberryAteCount >= EASY_MODE_RASPBERRY_COUNT)
+        if (raspberryAteCount >= RASPBERRY_TO_EAT_COUNT_EASY_MODE)
         {
             renderSnake(dt);
 

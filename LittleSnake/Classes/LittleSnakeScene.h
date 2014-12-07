@@ -8,11 +8,11 @@ const int MAX_MAP_X = 48;	// HD screen ratio with 40 * 40 blocks
 const int MAX_MAP_Y = 27;	// TODO: remove / 2
 
 const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.03;
-const float SNAKE_MOVE_INTERVAL = 0.2;
 const float GAME_FINISH_DELAY = 0.5;
-const int INITIAL_SNAKE_BODY_COUNT = 4;
+const float SNAKE_MOVE_INTERVAL_EASY_MODE = 0.2;
+const int INITIAL_SNAKE_BODY_COUNT_EASY_MODE = 4;
+const int RASPBERRY_TO_EAT_COUNT_EASY_MODE = 1;
 const int MAX_SNAKE_BODY_COUNT = 20;
-const int EASY_MODE_RASPBERRY_COUNT = 1;
 
 typedef struct {
 	cocos2d::Sprite *sprite;
@@ -84,6 +84,14 @@ private:
     cocos2d::Label *gameFinishLabel;
 
 	float dtCount;
+
+	float snakeMoveInterval;
+	float raspberryToEatCount;
+	float initialSnakeBodyCount;
+
+
+	void setupForEasyMode();
+	void setupForHardcoreMode();
 
     void loadSnakeFaces();
     void hideSnakeFaces();
