@@ -44,13 +44,8 @@ enum GameState {
 class LittleSnake : public cocos2d::Layer
 {
 public:
-    // there's no 'id' in cpp, so we recommend returning the class instance pointer
     static cocos2d::Scene* createScene(bool isEasyMode);
-
-    // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
-    
-    // implement the "static create()" method manually
     CREATE_FUNC(LittleSnake);
 
 	void update(float dt);
@@ -97,11 +92,13 @@ private:
 
     void setupForEasyMode();
 	void setupForHardcoreMode();
+    void setupCommon();
+
+    void showGameFinishLabel(std::string text, cocos2d::Color3B color);
 
     void loadSnakeFaces();
-    void hideSnakeFaces();
     void addSnakeFacesAsChild();
-    void removeSnakeFacesAsChild();
+    void hideSnakeFaces();
 
     void initializeSnake();
     void deleteSnake();
@@ -118,6 +115,7 @@ private:
     void updateSnakeFace(cocos2d::Sprite *snakeFace);
 
     void setGameStateToPlayAgain();
+    void setGameStateToPlayAgainWithDelay();
 
     bool isSnakeEatingRaspberry();
     bool isSnakeCollidingWithRaspberry();
