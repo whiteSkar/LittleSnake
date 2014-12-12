@@ -2,13 +2,17 @@
 
 USING_NS_CC;
 
-Scene* LittleSnake::createScene()
+Scene* LittleSnake::createScene(bool isEasyMode)
 {
     // 'scene' is an autorelease object
     auto scene = Scene::create();
     
     // 'layer' is an autorelease object
     auto layer = LittleSnake::create();
+    if (isEasyMode)
+        layer->setupForEasyMode();
+    else
+        layer->setupForHardcoreMode();
 
     // add layer as a child to scene
     scene->addChild(layer);
@@ -18,9 +22,6 @@ Scene* LittleSnake::createScene()
 }
 
 /*
- * -- Easy mode starts with slower speed, less snake bodies, and fixed # of raspberries to eat
- * -- Hardcore mode starts faster pseed, longer snake bodies, and needs to eat until the snake fills the entire screen
- * --- When the number of snake bodies + 1 (head) >= number of grids, they win (make sure spawn raspberry method is not called this case. it will go into infinite loop)
  * - show number of raspberries eaten
  */
 
@@ -45,13 +46,10 @@ bool LittleSnake::init()
     loadSnakeFaces();
     addSnakeFacesAsChild();
 
-    initializeSnake();
-
     raspberryAteCount = 0;
 	dtCount = 0.0;
 
     raspberryBody = nullptr;
-    spawnRaspberry();
     
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->setSwallowTouches(true);
@@ -67,10 +65,6 @@ bool LittleSnake::init()
 	initialTouchPos = Point::ZERO;
 	this->currentTouchPos = Point::ZERO;
 
-	this->scheduleUpdate();
-
-    gameState = INITIALIZED;
-
     auto menuItem1 = MenuItemFont::create("Go Back", CC_CALLBACK_1(LittleSnake::exitScene, this));
     auto menuItem2 = MenuItemFont::create("Play Again", CC_CALLBACK_1(LittleSnake::playAgain, this));
     menuItem1->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 1, Director::getInstance()->getVisibleSize().height / 3 * 1);
@@ -82,6 +76,32 @@ bool LittleSnake::init()
     this->addChild(menu);
     
     return true;
+}
+
+void LittleSnake::setupForEasyMode()
+{
+	snakeMoveInterval = SNAKE_MOVE_INTERVAL_EASY_MODE;
+	raspberryToEatCount	= RASPBERRY_TO_EAT_COUNT_EASY_MODE;
+	initialSnakeBodyCount = INITIAL_SNAKE_BODY_COUNT_EASY_MODE;
+
+    initializeSnake();
+    spawnRaspberry();
+
+    gameState = INITIALIZED;
+    this->scheduleUpdate();
+}
+
+void LittleSnake::setupForHardcoreMode()
+{
+    snakeMoveInterval = SNAKE_MOVE_INTERVAL_HARDCORE_MODE;
+	raspberryToEatCount	= RASPBERRY_TO_EAT_COUNT_HARDCORE_MODE;
+	initialSnakeBodyCount = INITIAL_SNAKE_BODY_COUNT_HARDCORE_MODE;
+
+    initializeSnake();
+    spawnRaspberry();
+
+    gameState = INITIALIZED;
+    this->scheduleUpdate();
 }
 
 void LittleSnake::initializeSnake()
@@ -97,7 +117,7 @@ void LittleSnake::initializeSnake()
     updateSnakeFace(snakeStandardFace);
     rotateSnakeHead(snakeDirection);
 
-    for (int i = 0; i < INITIAL_SNAKE_BODY_COUNT_EASY_MODE; ++i)
+    for (int i = 0; i < initialSnakeBodyCount; ++i)
     {
         addSnakeBodySpriteBody(snakeHeadBody->row, snakeHeadBody->col - (i+1));
     }
@@ -116,19 +136,6 @@ void LittleSnake::deleteSnake()
     hideSnakeFaces();   // should delete. Refactor to have both hide && remove
     snakeBodies.clear();
 }
-
-void LittleSnake::setupForEasyMode()
-{
-	snakeMoveInterval = SNAKE_MOVE_INTERVAL_EASY_MODE;
-	raspberryToEatCount	= RASPBERRY_TO_EAT_COUNT_EASY_MODE;
-	initialSnakeBodyCount = INITIAL_SNAKE_BODY_COUNT_EASY_MODE;
-}
-
-void LittleSnake::setupForHardcoreMode()
-{
-
-}
-
 
 void LittleSnake::update(float dt)
 {
@@ -185,9 +192,9 @@ void LittleSnake::processSwipe(float dt)
 void LittleSnake::updateSnake(float dt)
 {
 	dtCount += dt;
-	if (dtCount >= SNAKE_MOVE_INTERVAL_EASY_MODE)
+	if (dtCount >= snakeMoveInterval)
 	{
-		dtCount -= SNAKE_MOVE_INTERVAL_EASY_MODE;
+		dtCount -= snakeMoveInterval;
 	}
 	else
 	{
@@ -265,7 +272,7 @@ void LittleSnake::updateSnake(float dt)
         SpriteBody *lastSnakeBody = snakeBodies.back();
         addSnakeBodySpriteBody(lastSnakeBody->row, lastSnakeBody->col);
 
-        if (raspberryAteCount >= RASPBERRY_TO_EAT_COUNT_EASY_MODE)
+        if (raspberryAteCount >= raspberryToEatCount)
         {
             renderSnake(dt);
 

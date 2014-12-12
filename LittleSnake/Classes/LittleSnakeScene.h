@@ -7,12 +7,17 @@ const int BLOCK_PIXEL_SIZE = 40;	// width and height of the snake body & the eac
 const int MAX_MAP_X = 48;	// HD screen ratio with 40 * 40 blocks
 const int MAX_MAP_Y = 27;	// TODO: remove / 2
 
-const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.03;
-const float GAME_FINISH_DELAY = 0.5;
-const float SNAKE_MOVE_INTERVAL_EASY_MODE = 0.2;
+const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.03f;
+const float GAME_FINISH_DELAY = 0.5f;
+const int MAX_SNAKE_BODY_COUNT = 20;
+
+const float SNAKE_MOVE_INTERVAL_EASY_MODE = 0.2f;
 const int INITIAL_SNAKE_BODY_COUNT_EASY_MODE = 4;
 const int RASPBERRY_TO_EAT_COUNT_EASY_MODE = 1;
-const int MAX_SNAKE_BODY_COUNT = 20;
+
+const float SNAKE_MOVE_INTERVAL_HARDCORE_MODE = 0.1f;
+const int INITIAL_SNAKE_BODY_COUNT_HARDCORE_MODE = 20;
+const int RASPBERRY_TO_EAT_COUNT_HARDCORE_MODE = MAX_MAP_X * MAX_MAP_Y - (INITIAL_SNAKE_BODY_COUNT_HARDCORE_MODE + 1);  // 1 for head
 
 typedef struct {
 	cocos2d::Sprite *sprite;
@@ -40,7 +45,7 @@ class LittleSnake : public cocos2d::Layer
 {
 public:
     // there's no 'id' in cpp, so we recommend returning the class instance pointer
-    static cocos2d::Scene* createScene();
+    static cocos2d::Scene* createScene(bool isEasyMode);
 
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
@@ -90,7 +95,7 @@ private:
 	float initialSnakeBodyCount;
 
 
-	void setupForEasyMode();
+    void setupForEasyMode();
 	void setupForHardcoreMode();
 
     void loadSnakeFaces();

@@ -30,7 +30,6 @@ bool MenuScene::init()
     directorOrigin = Director::getInstance()->getVisibleOrigin();
 
     auto background = Sprite::create("background.png"); // use Different Background. Transition seems weird
-    //background->setScale(0.5);  // TODO: remove later
     background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2, directorOrigin.y + background->getBoundingBox().size.height/2);
     this->addChild(background);
 
@@ -48,14 +47,14 @@ bool MenuScene::init()
 
 void MenuScene::startEasyMode(Ref *sender)
 {
-    auto gameScene = LittleSnake::createScene();
+    auto gameScene = LittleSnake::createScene(true);
 
     Director::getInstance()->pushScene(TransitionMoveInR::create(1.0f, gameScene));
 }
 
 void MenuScene::startHardcoreMode(Ref *sender)
 {
-    auto gameScene = LittleSnake::createScene();
+    auto gameScene = LittleSnake::createScene(false);
 
     Director::getInstance()->pushScene(TransitionMoveInR::create(1.0f, gameScene));
 }
