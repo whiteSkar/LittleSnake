@@ -79,6 +79,8 @@ void LittleSnake::setupForHardcoreMode()
 
 void LittleSnake::setupCommon()
 {
+    log("Game State: INITIALIZED");
+
     raspberryBody = nullptr;
     raspberryAteCount = 0;
 	dtCount = 0.0;
@@ -133,10 +135,10 @@ void LittleSnake::deleteSnake()
     for (int i = 0; i < snakeBodies.size(); ++i)
     {
         this->removeChild(snakeBodies[i]->sprite);
-        delete(snakeBodies[i]);
+        delete snakeBodies[i];
     }
 
-    delete(snakeHeadBody);
+    delete snakeHeadBody;
 
     hideSnakeFaces();
     snakeBodies.clear();
@@ -232,6 +234,7 @@ void LittleSnake::updateSnake(float dt)
 
     if (isSnakeDead())
     {
+        log("Game State: DEAD");
         updateSnakeFace(snakeDeadFace);
         rotateSnakeHead(snakeDirection);
 
@@ -260,15 +263,19 @@ void LittleSnake::updateSnake(float dt)
 
     if (isSnakeEatingRaspberry())
     {
+        log("Snake is eating raspberry");
         raspberryAteCount++;
 
         updateSnakeFace(snakeYummyFace);
+        rotateSnakeHead(snakeDirection);
 
         SpriteBody *lastSnakeBody = snakeBodies.back();
         addSnakeBodySpriteBody(lastSnakeBody->row, lastSnakeBody->col);
 
         if (raspberryAteCount >= raspberryToEatCount)
         {
+            log("Game State: WIN");
+
             renderSnake(dt);
 
             showGameFinishLabel("Victory!", Color3B::GREEN);
@@ -284,6 +291,7 @@ void LittleSnake::updateSnake(float dt)
     else
     {
         updateSnakeFace(snakeStandardFace);
+        rotateSnakeHead(snakeDirection);
     }
 
     renderSnake(dt);
@@ -291,6 +299,7 @@ void LittleSnake::updateSnake(float dt)
 
 void LittleSnake::setGameStateToPlayAgain()
 {
+    log("Game State: PLAYAGAIN");
     gameState = PLAYAGAIN;
     updateSnakeFace(snakePlayAgainFace);
     rotateSnakeHead(snakeDirection);
@@ -353,6 +362,8 @@ void LittleSnake::updateSnakeFace(Sprite *snakeFace)
 
 void LittleSnake::spawnRaspberry()
 {
+    log("Spawning Raspberry");
+
     if (!raspberryBody)
     {
         auto raspberry = Sprite::create("Raspberry.png");
@@ -433,6 +444,7 @@ bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
 {
     if (gameState == INITIALIZED || gameState == REINITIALIZED)
     {
+        log("Game State: PLAYING");
         gameState = PLAYING;
     }
 
@@ -478,6 +490,8 @@ void LittleSnake::addSnakeBodySpriteBody(int row, int col)
 
 void LittleSnake::playAgain(Ref *sender)
 {
+    log("Game State: REINITIALIZED");
+
     menu->setVisible(false);
     
     raspberryAteCount = 0;
@@ -491,6 +505,10 @@ void LittleSnake::playAgain(Ref *sender)
 
 void LittleSnake::exitScene(Ref *sender)
 {
+    deleteSnake();
+    this->removeChild(raspberryBody->sprite);
+    delete raspberryBody;
+
     auto previousScene = Director::getInstance()->getPreviousScene();
     Director::getInstance()->popScene(TransitionMoveInL::create(1.0f, previousScene));
 }
