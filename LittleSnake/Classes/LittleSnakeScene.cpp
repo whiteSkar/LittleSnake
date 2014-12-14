@@ -31,6 +31,7 @@ bool LittleSnake::init()
 
     auto background = Sprite::create("background.png");
     background->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
+    background->setLocalZOrder(-999);
     this->addChild(background);
 
     loadSnakeFaces();
@@ -102,7 +103,7 @@ void LittleSnake::showGameFinishLabel(std::string text, Color3B color)
     gameFinishLabel->setColor(color);  // TODO: ask designer for color
     gameFinishLabel->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height / 3 * 2);
     gameFinishLabel->setScale(0.2f);
-    gameFinishLabel->setZOrder(999);
+    gameFinishLabel->setLocalZOrder(999);
     this->addChild(gameFinishLabel);
 
     auto scaleAction = ScaleTo::create(GAME_FINISH_DELAY, 1.0f);

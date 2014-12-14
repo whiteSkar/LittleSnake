@@ -20,7 +20,11 @@ bool AppDelegate::applicationDidFinishLaunching()
 	{
         glview = GLView::create("Little Snake");
 		glview->setFrameSize(1920, 1080);
-        glview->setFrameZoomFactor(0.5f);   // TODO: remove this factor
+
+        #if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+            glview->setFrameZoomFactor(0.5f);
+        #endif
+        
         director->setOpenGLView(glview);
     }
 
