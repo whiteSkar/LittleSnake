@@ -4,8 +4,15 @@
 #include "cocos2d.h"
 
 const int BLOCK_PIXEL_SIZE = 40;	// width and height of the snake body & the each grid block
-const int MAX_MAP_X = 48;	// HD screen ratio with 40 * 40 blocks
-const int MAX_MAP_Y = 27;	// TODO: remove / 2
+const int MAX_SCREEN_X = 48;
+const int MAX_SCREEN_Y = 27;
+const int MAP_LENGTH = 42;	// HD screen ratio with 40 * 40 blocks - offset.
+const int MAP_HEIGHT = 23;
+
+const int MIN_MAP_X = (MAX_SCREEN_X - MAP_LENGTH) / 2;
+const int MAX_MAP_X = MIN_MAP_X + MAP_LENGTH;
+const int MIN_MAP_Y = (MAX_SCREEN_Y - MAP_HEIGHT) / 2;
+const int MAX_MAP_Y = MIN_MAP_Y + MAP_HEIGHT;
 
 const float SWIPE_GESTURE_THRESHOLD_SCREEN_PERCENTAGE = 0.03f;
 const float GAME_FINISH_DELAY = 0.5f;
@@ -17,7 +24,7 @@ const int RASPBERRY_TO_EAT_COUNT_EASY_MODE = 1;
 
 const float SNAKE_MOVE_INTERVAL_HARDCORE_MODE = 0.1f;
 const int INITIAL_SNAKE_BODY_COUNT_HARDCORE_MODE = 20;
-const int RASPBERRY_TO_EAT_COUNT_HARDCORE_MODE = MAX_MAP_X * MAX_MAP_Y - (INITIAL_SNAKE_BODY_COUNT_HARDCORE_MODE + 1);  // 1 for head
+const int RASPBERRY_TO_EAT_COUNT_HARDCORE_MODE = MAP_LENGTH * MAP_HEIGHT - (INITIAL_SNAKE_BODY_COUNT_HARDCORE_MODE + 1);  // 1 for head
 
 typedef struct {
 	cocos2d::Sprite *sprite;

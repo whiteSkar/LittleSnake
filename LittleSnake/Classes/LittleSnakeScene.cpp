@@ -30,7 +30,7 @@ bool LittleSnake::init()
     directorOrigin = Director::getInstance()->getVisibleOrigin();
 
     auto background = Sprite::create("background.png");
-    background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2, directorOrigin.y + background->getBoundingBox().size.height/2);
+    background->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
     this->addChild(background);
 
     loadSnakeFaces();
@@ -116,8 +116,8 @@ void LittleSnake::initializeSnake()
     snakeBodies = std::vector<SpriteBody*>();
 
 	snakeHeadBody = new SpriteBody();
-    snakeHeadBody->row = MAX_MAP_Y / 2;
-	snakeHeadBody->col = MAX_MAP_X / 2;
+    snakeHeadBody->row = MAX_SCREEN_Y / 2;
+	snakeHeadBody->col = MAX_SCREEN_X / 2;
 
     updateSnakeFace(snakeStandardFace);
     rotateSnakeHead(snakeDirection);
@@ -374,8 +374,8 @@ void LittleSnake::spawnRaspberry()
 
     do
     {
-	    raspberryBody->row = rand() % MAX_MAP_Y;
-	    raspberryBody->col = rand() % MAX_MAP_X;
+	    raspberryBody->row = rand() % MAP_HEIGHT + MIN_MAP_Y;
+	    raspberryBody->col = rand() % MAP_LENGTH + MIN_MAP_X;
     } while (isSnakeCollidingWithRaspberry());
 
 	raspberryBody->sprite->setPosition(getSpritePosWithBlockPos(raspberryBody->row, raspberryBody->col));
@@ -431,7 +431,7 @@ bool LittleSnake::isSnakeEatingItsOwnBody()
 
 bool LittleSnake::isSnakeDead()
 {
-    if (snakeHeadBody->row < 0 || snakeHeadBody->row >= MAX_MAP_Y || snakeHeadBody->col < 0 || snakeHeadBody->col >= MAX_MAP_X)
+    if (snakeHeadBody->row < MIN_MAP_Y || snakeHeadBody->row >= MAX_MAP_Y || snakeHeadBody->col < MIN_MAP_X || snakeHeadBody->col >= MAX_MAP_X)
         return true;
 
     if (isSnakeEatingItsOwnBody())

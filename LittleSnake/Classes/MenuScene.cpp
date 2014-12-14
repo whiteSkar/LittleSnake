@@ -30,7 +30,7 @@ bool MenuScene::init()
     directorOrigin = Director::getInstance()->getVisibleOrigin();
 
     auto background = Sprite::create("background.png"); // use Different Background. Transition seems weird
-    background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2, directorOrigin.y + background->getBoundingBox().size.height/2);
+    background->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
     this->addChild(background);
 
     auto menuItem1 = MenuItemFont::create("Easy Mode", CC_CALLBACK_1(MenuScene::startEasyMode, this));
