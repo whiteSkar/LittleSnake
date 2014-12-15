@@ -1,4 +1,5 @@
 #include "LittleSnakeScene.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 
@@ -244,6 +245,7 @@ void LittleSnake::updateSnake(float dt)
 
         renderSnake(dt);
 
+        CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/Defeat.wav");
         showGameFinishLabel("Defeat!", Color3B::RED);
 
         gameState = DEAD;
@@ -279,6 +281,7 @@ void LittleSnake::updateSnake(float dt)
 
             renderSnake(dt);
 
+            CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/Victory.wav");
             showGameFinishLabel("Victory!", Color3B::GREEN);
 
             gameState = WIN;
@@ -287,6 +290,7 @@ void LittleSnake::updateSnake(float dt)
             return;
         }
 
+        CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/EatRaspberry.wav");
         spawnRaspberry();
     }
     else
