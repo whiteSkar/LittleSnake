@@ -35,6 +35,11 @@ bool LittleSnake::init()
     background->setLocalZOrder(-999);
     this->addChild(background);
 
+    auto backgroundBoundary = Sprite::create("BackgroundBoundary.png");
+    backgroundBoundary->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
+    backgroundBoundary->setZOrder(-999);
+    this->addChild(backgroundBoundary);
+
     loadSnakeFaces();
     addSnakeFacesAsChild();
     
@@ -52,6 +57,12 @@ bool LittleSnake::init()
     auto menuItem2 = MenuItemFont::create("Play Again", CC_CALLBACK_1(LittleSnake::playAgain, this));
     menuItem1->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 1, Director::getInstance()->getVisibleSize().height / 3 * 1);
     menuItem2->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 2, Director::getInstance()->getVisibleSize().height / 3 * 1);
+    //menuItem1->setFontNameObj("fonts/Showcard Gothic.ttf");    // not refactoring right now
+    //menuItem2->setFontNameObj("fonts/Showcard Gothic.ttf");
+    //menuItem1->setFontSizeObj(100);
+    //menuItem2->setFontSizeObj(100);
+    //menuItem1->setColor(Color3B::Color3B(133, 96, 168));    // same as the menu font. not refactoring now.
+    //menuItem2->setColor(Color3B::Color3B(133, 96, 168));
 
     menu = Menu::create(menuItem1, menuItem2, NULL);
     menu->setPosition(0, 0);
@@ -100,9 +111,9 @@ void LittleSnake::setupCommon()
 
 void LittleSnake::showGameFinishLabel(std::string text, Color3B color)
 {
-    gameFinishLabel = Label::createWithTTF(text, "fonts/Schwarzwald Regular.ttf", 400);
-    gameFinishLabel->setColor(color);  // TODO: ask designer for color
-    gameFinishLabel->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height / 3 * 2);
+    gameFinishLabel = Label::createWithTTF(text, "fonts/Showcard Gothic.ttf", 370);
+    gameFinishLabel->setColor(color);
+    gameFinishLabel->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height / 2 + directorSize.height / 10);
     gameFinishLabel->setScale(0.2f);
     gameFinishLabel->setLocalZOrder(999);
     this->addChild(gameFinishLabel);
@@ -246,7 +257,7 @@ void LittleSnake::updateSnake(float dt)
         renderSnake(dt);
 
         CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/Defeat.wav");
-        showGameFinishLabel("Defeat!", Color3B::RED);
+        showGameFinishLabel("Defeat", Color3B::Color3B(235, 66, 36));
 
         gameState = DEAD;
         setGameStateToPlayAgainWithDelay();
@@ -267,6 +278,7 @@ void LittleSnake::updateSnake(float dt)
     if (isSnakeEatingRaspberry())
     {
         log("Snake is eating raspberry");
+        raspberryBody->sprite->setVisible(false);
         raspberryAteCount++;
 
         updateSnakeFace(snakeYummyFace);
@@ -282,7 +294,7 @@ void LittleSnake::updateSnake(float dt)
             renderSnake(dt);
 
             CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/Victory.wav");
-            showGameFinishLabel("Victory!", Color3B::GREEN);
+            showGameFinishLabel("Victory", Color3B::Color3B(86, 116, 185));
 
             gameState = WIN;
             setGameStateToPlayAgainWithDelay();
@@ -384,6 +396,7 @@ void LittleSnake::spawnRaspberry()
     } while (isSnakeCollidingWithRaspberry());
 
 	raspberryBody->sprite->setPosition(getSpritePosWithBlockPos(raspberryBody->row, raspberryBody->col));
+    raspberryBody->sprite->setVisible(true);
 }
 
 bool LittleSnake::isSnakeEatingRaspberry()
