@@ -57,16 +57,17 @@ bool LittleSnake::init()
     auto menuItem2 = MenuItemFont::create("Play Again", CC_CALLBACK_1(LittleSnake::playAgain, this));
     menuItem1->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 1, Director::getInstance()->getVisibleSize().height / 3 * 1);
     menuItem2->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 2, Director::getInstance()->getVisibleSize().height / 3 * 1);
-    //menuItem1->setFontNameObj("fonts/Showcard Gothic.ttf");    // not refactoring right now
-    //menuItem2->setFontNameObj("fonts/Showcard Gothic.ttf");
-    //menuItem1->setFontSizeObj(100);
-    //menuItem2->setFontSizeObj(100);
-    //menuItem1->setColor(Color3B::Color3B(133, 96, 168));    // same as the menu font. not refactoring now.
-    //menuItem2->setColor(Color3B::Color3B(133, 96, 168));
+    menuItem1->setFontNameObj("fonts/Showcard Gothic.ttf");    // not refactoring right now
+    menuItem2->setFontNameObj("fonts/Showcard Gothic.ttf");
+    menuItem1->setFontSizeObj(100);
+    menuItem2->setFontSizeObj(100);
+    menuItem1->setColor(Color3B::Color3B(133, 96, 168));    // same as the menu font. not refactoring now.
+    menuItem2->setColor(Color3B::Color3B(133, 96, 168));
 
     menu = Menu::create(menuItem1, menuItem2, NULL);
     menu->setPosition(0, 0);
     menu->setVisible(false);
+    menu->setLocalZOrder(999);
     this->addChild(menu);
     
     return true;
@@ -528,7 +529,7 @@ void LittleSnake::exitScene(Ref *sender)
     delete raspberryBody;
 
     auto previousScene = Director::getInstance()->getPreviousScene();
-    Director::getInstance()->popScene(TransitionMoveInL::create(1.0f, previousScene));
+    Director::getInstance()->popScene(TransitionMoveInL::create(0.5f, previousScene));
 }
 
 void LittleSnake::onTouchMoved(Touch* touch, Event* event)

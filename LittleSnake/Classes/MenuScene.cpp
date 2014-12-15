@@ -91,12 +91,12 @@ void MenuScene::startEasyMode(Ref *sender)
 {
     auto gameScene = LittleSnake::createScene(true);
 
-    Director::getInstance()->pushScene(TransitionMoveInR::create(1.0f, gameScene));
+    Director::getInstance()->pushScene(TransitionMoveInR::create(0.5f, gameScene));
 }
 
 void MenuScene::startHardcoreMode(Ref *sender)
 {
     auto gameScene = LittleSnake::createScene(false);
 
-    Director::getInstance()->pushScene(TransitionMoveInR::create(1.0f, gameScene));
+    Director::getInstance()->pushScene(TransitionMoveInR::create(0.5f, gameScene));
 }
