@@ -48,8 +48,8 @@ bool MenuScene::init()
     menu->setPosition(0, 0);
     this->addChild(menu);
 
-    auto menuItemTitleColor = Color3B::Color3B(133, 96, 168);
-    auto menuItemDescriptionColor = Color3B::Color3B(168, 100, 168);
+    auto menuItemTitleColor = Color3B(133, 96, 168);
+    auto menuItemDescriptionColor = Color3B(168, 100, 168);
 
     auto menuTitleFontSize = 80.0f;
     auto menuDescriptionFontSize = 48.0f;

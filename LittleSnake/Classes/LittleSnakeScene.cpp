@@ -61,8 +61,8 @@ bool LittleSnake::init()
     menuItem2->setFontNameObj("fonts/Showcard Gothic.ttf");
     menuItem1->setFontSizeObj(100);
     menuItem2->setFontSizeObj(100);
-    menuItem1->setColor(Color3B::Color3B(133, 96, 168));    // same as the menu font. not refactoring now.
-    menuItem2->setColor(Color3B::Color3B(133, 96, 168));
+    menuItem1->setColor(Color3B(133, 96, 168));    // same as the menu font. not refactoring now.
+    menuItem2->setColor(Color3B(133, 96, 168));
 
     menu = Menu::create(menuItem1, menuItem2, NULL);
     menu->setPosition(0, 0);
@@ -258,7 +258,7 @@ void LittleSnake::updateSnake(float dt)
         renderSnake(dt);
 
         CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/Defeat.wav");
-        showGameFinishLabel("Defeat", Color3B::Color3B(235, 66, 36));
+        showGameFinishLabel("Defeat", Color3B(235, 66, 36));
 
         gameState = DEAD;
         setGameStateToPlayAgainWithDelay();
@@ -295,7 +295,7 @@ void LittleSnake::updateSnake(float dt)
             renderSnake(dt);
 
             CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/Victory.wav");
-            showGameFinishLabel("Victory", Color3B::Color3B(86, 116, 185));
+            showGameFinishLabel("Victory", Color3B(86, 116, 185));
 
             gameState = WIN;
             setGameStateToPlayAgainWithDelay();
