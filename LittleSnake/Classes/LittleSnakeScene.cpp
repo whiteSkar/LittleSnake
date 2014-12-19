@@ -257,7 +257,7 @@ void LittleSnake::updateSnake(float dt)
 
         renderSnake(dt);
 
-        CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/Defeat.wav");
+        CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/defeat.wav");
         showGameFinishLabel("Defeat", Color3B(235, 66, 36));
 
         gameState = DEAD;
@@ -294,7 +294,7 @@ void LittleSnake::updateSnake(float dt)
 
             renderSnake(dt);
 
-            CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/Victory.wav");
+            CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/victory.wav");
             showGameFinishLabel("Victory", Color3B(86, 116, 185));
 
             gameState = WIN;
@@ -303,7 +303,7 @@ void LittleSnake::updateSnake(float dt)
             return;
         }
 
-        CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/EatRaspberry.wav");
+        CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("audio/eat_raspberry.wav");
         spawnRaspberry();
     }
     else
