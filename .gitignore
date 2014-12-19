@@ -116,7 +116,9 @@ tests/*/runtime/
 tests/*/publish/
 
 # Android
+# The project.properties says "This file must be checked in Version Control Systems". Why does this file ignore this??
 project.properties
+!*/proj.android/project.properties
 
 # Ignore prebuilt libraries folder
 /external/xxhash/
