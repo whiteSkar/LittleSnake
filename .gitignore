@@ -1,3 +1,6 @@
+########### android apk
+*.apk
+
 ########### cocos-2dx
 # Ignore thumbnails created by windows
 Thumbs.db
