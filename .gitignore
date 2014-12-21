@@ -1,5 +1,6 @@
-########### android apk
+########### Playstore stuff
 *.apk
+PlaystoreAssets/
 
 ########### cocos-2dx
 # Ignore thumbnails created by windows
