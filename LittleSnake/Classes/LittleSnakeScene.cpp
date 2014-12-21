@@ -29,6 +29,8 @@ bool LittleSnake::init()
     
     directorSize = Director::getInstance()->getVisibleSize();
     directorOrigin = Director::getInstance()->getVisibleOrigin();
+    log("Director visible size: width->%d height->%d", (int)directorSize.width,(int) directorSize.height);
+    log("Director origin: x->%d y->%d", (int)directorOrigin.x, (int)directorOrigin.y);
 
     auto background = Sprite::create("background.png");
     background->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
@@ -477,6 +479,7 @@ bool LittleSnake::onTouchBegan(Touch* touch, Event* event)
 void LittleSnake::renderSnake(float dt)
 {
     snakeHeadBody->sprite->setPosition(getSpritePosWithBlockPos(snakeHeadBody->row, snakeHeadBody->col));
+    log("Head is at: x->%d y->%d", snakeHeadBody->col, snakeHeadBody->row);
 
 	for (auto it = snakeBodies.begin(); it != snakeBodies.end(); ++it)
 	{
@@ -488,8 +491,9 @@ void LittleSnake::renderSnake(float dt)
 Point LittleSnake::getSpritePosWithBlockPos(int row, int col)
 {
 	// Assumes all sprites have the same pixel size as the block
+    int horizontalOffset = (1794 - 1760) / 2;
 	int y = directorOrigin.y + row * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2;
-	int x = directorOrigin.x + col * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2;
+	int x = directorOrigin.x + col * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2 + horizontalOffset;
 	return Point(x, y);
 }
 
