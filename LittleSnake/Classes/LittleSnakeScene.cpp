@@ -55,8 +55,8 @@ bool LittleSnake::init()
 
     auto menuItem1 = MenuItemFont::create("Go Back", CC_CALLBACK_1(LittleSnake::exitScene, this));
     auto menuItem2 = MenuItemFont::create("Play Again", CC_CALLBACK_1(LittleSnake::playAgain, this));
-    menuItem1->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 1, Director::getInstance()->getVisibleSize().height / 3 * 1);
-    menuItem2->setPosition(Director::getInstance()->getVisibleSize().width / 3 * 2, Director::getInstance()->getVisibleSize().height / 3 * 1);
+    menuItem1->setPosition(directorSize.width / 3 * 1, directorSize.height / 3 * 1);
+    menuItem2->setPosition(directorSize.width / 3 * 2, directorSize.height / 3 * 1);
     menuItem1->setFontNameObj("fonts/Showcard Gothic.ttf");    // not refactoring right now
     menuItem2->setFontNameObj("fonts/Showcard Gothic.ttf");
     menuItem1->setFontSizeObj(100);

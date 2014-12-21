@@ -41,8 +41,8 @@ bool MenuScene::init()
 
     auto menuItem1 = MenuItemImage::create("MenuButton.png", "MenuButton.png", "MenuButton.png", CC_CALLBACK_1(MenuScene::startEasyMode, this));
     auto menuItem2 = MenuItemImage::create("MenuButton.png", "MenuButton.png", "MenuButton.png", CC_CALLBACK_1(MenuScene::startHardcoreMode, this));
-    menuItem1->setPosition(Director::getInstance()->getVisibleSize().width / 100 * 30, Director::getInstance()->getVisibleSize().height / 3);
-    menuItem2->setPosition(Director::getInstance()->getVisibleSize().width / 100 * 70, Director::getInstance()->getVisibleSize().height / 3);
+    menuItem1->setPosition(directorSize.width / 100 * 30, directorSize.height / 3);
+    menuItem2->setPosition(directorSize.width / 100 * 70, directorSize.height / 3);
 
     auto menu = Menu::create(menuItem1, menuItem2, NULL);
     menu->setPosition(0, 0);
