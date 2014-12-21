@@ -30,12 +30,12 @@ bool MenuScene::init()
     directorOrigin = Director::getInstance()->getVisibleOrigin();
 
     auto background = Sprite::create("MenuBackground.png");
-    background->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
+    background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2 + 40, directorOrigin.y + directorSize.height/2);   // boundary width
     background->setZOrder(-999);
     this->addChild(background);
 
     auto backgroundBoundary = Sprite::create("BackgroundBoundary.png");
-    backgroundBoundary->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
+    backgroundBoundary->setPosition(directorOrigin.x + backgroundBoundary->getBoundingBox().size.width/2, directorOrigin.y + directorSize.height/2);
     backgroundBoundary->setZOrder(-999);
     this->addChild(backgroundBoundary);
 

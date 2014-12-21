@@ -33,12 +33,12 @@ bool LittleSnake::init()
     log("Director origin: x->%d y->%d", (int)directorOrigin.x, (int)directorOrigin.y);
 
     auto background = Sprite::create("background.png");
-    background->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
+    background->setPosition(directorOrigin.x + background->getBoundingBox().size.width/2 + 40, directorOrigin.y + directorSize.height/2);   // boundary width
     background->setLocalZOrder(-999);
     this->addChild(background);
 
     auto backgroundBoundary = Sprite::create("BackgroundBoundary.png");
-    backgroundBoundary->setPosition(directorOrigin.x + directorSize.width/2, directorOrigin.y + directorSize.height/2);
+    backgroundBoundary->setPosition(directorOrigin.x + backgroundBoundary->getBoundingBox().size.width/2, directorOrigin.y + directorSize.height/2);
     backgroundBoundary->setZOrder(-999);
     this->addChild(backgroundBoundary);
 
@@ -491,9 +491,8 @@ void LittleSnake::renderSnake(float dt)
 Point LittleSnake::getSpritePosWithBlockPos(int row, int col)
 {
 	// Assumes all sprites have the same pixel size as the block
-    int horizontalOffset = (1794 - 1760) / 2;
 	int y = directorOrigin.y + row * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2;
-	int x = directorOrigin.x + col * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2 + horizontalOffset;
+	int x = directorOrigin.x + col * BLOCK_PIXEL_SIZE + BLOCK_PIXEL_SIZE/2;
 	return Point(x, y);
 }
 
